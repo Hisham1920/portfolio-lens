@@ -52,6 +52,10 @@ import {
 const COLORS = ['#39e58c', '#65a6ff', '#ffb454', '#bf8cff', '#ff6d85', '#43d8d0']
 const SECTORS = ['Automobile', 'Consumer', 'Energy', 'Financials', 'Healthcare', 'Industrials', 'Technology', 'Telecom', 'Utilities', 'Other']
 const MARKET_CAPS = ['Large Cap', 'Mid Cap', 'Small Cap']
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+const PUBLIC_DEMO_MODE = import.meta.env.VITE_PUBLIC_DEMO === 'true'
+
+const apiUrl = (path) => `${API_BASE_URL}${path}`
 
 const createHolding = () => ({
   symbol: '',
@@ -223,7 +227,7 @@ async function responseJson(response, fallbackMessage) {
   return response.json()
 }
 
-function PortfolioReport({ portfolio }) {
+function PortfolioReport({ portfolio, publicDemoMode = false }) {
   const [mode, setMode] = useState('automated')
   const cacheKey = useMemo(() => portfolioReportCacheKey(portfolio), [portfolio])
   const [aiResult, setAiResult] = useState(() => {
@@ -248,7 +252,7 @@ function PortfolioReport({ portfolio }) {
     setGenerating(true)
     setReportError('')
     try {
-      const response = await fetch('/api/portfolio/report/ai', {
+      const response = await fetch(apiUrl('/api/portfolio/report/ai'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -276,10 +280,19 @@ function PortfolioReport({ portfolio }) {
   const report = mode === 'ai' ? aiResult?.report : portfolio.automated_report
   const downloadPDF = async () => {
     if (!report) return
+    if (publicDemoMode && mode === 'automated') {
+      const link = document.createElement('a')
+      link.href = '/portfolio-lens-demo-report.pdf'
+      link.download = 'PortfolioLens-demo-report.pdf'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      return
+    }
     setDownloading(true)
     setReportError('')
     try {
-      const response = await fetch('/api/portfolio/report/pdf', {
+      const response = await fetch(apiUrl('/api/portfolio/report/pdf'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -328,9 +341,21 @@ function PortfolioReport({ portfolio }) {
           <ChartNoAxesCombined size={16} />
           <span><strong>Automated report</strong><small>Instant · No API cost</small></span>
         </button>
-        <button className={mode === 'ai' ? 'active' : ''} onClick={() => { setMode('ai'); setReportError('') }}>
+        <button
+          className={mode === 'ai' ? 'active' : ''}
+          onClick={() => { setMode('ai'); setReportError('') }}
+          disabled={publicDemoMode}
+          title={publicDemoMode ? 'Paid AI is disabled in the public showcase.' : ''}
+        >
           <BrainCircuit size={16} />
-          <span><strong>AI interpretation</strong><small>{aiResult ? 'Cached · No repeat charge' : 'Optional · One API request'}</small></span>
+          <span>
+            <strong>AI interpretation</strong>
+            <small>
+              {publicDemoMode
+                ? 'Disabled in public demo'
+                : aiResult ? 'Cached · No repeat charge' : 'Optional · One API request'}
+            </small>
+          </span>
         </button>
       </div>
 
@@ -717,9 +742,10 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    fetch('/api/portfolio/demo')
+    const source = PUBLIC_DEMO_MODE ? '/demo-portfolio.json' : apiUrl('/api/portfolio/demo')
+    fetch(source)
       .then((response) => {
-        if (!response.ok) throw new Error('The analysis service is unavailable.')
+        if (!response.ok) throw new Error(PUBLIC_DEMO_MODE ? 'The showcase data is unavailable.' : 'The analysis service is unavailable.')
         return response.json()
       })
       .then(setPortfolio)
@@ -758,9 +784,10 @@ function App() {
   }, [portfolio, searchTerm])
 
   const analyseCustomPortfolio = async (payload) => {
+    if (PUBLIC_DEMO_MODE) return 'Portfolio uploads are disabled in the public showcase.'
     setAnalysing(true)
     try {
-      const response = await fetch('/api/portfolio/analyse', {
+      const response = await fetch(apiUrl('/api/portfolio/analyse'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -780,12 +807,15 @@ function App() {
   }
 
   const extractPortfolioFiles = async (files) => {
+    if (PUBLIC_DEMO_MODE) {
+      return { data: null, error: 'AI extraction is disabled in the public showcase.' }
+    }
     setExtracting(true)
     try {
       const payload = new FormData()
       files.forEach((file) => payload.append('files', file))
       payload.append('consent', 'true')
-      const response = await fetch('/api/portfolio/extract', {
+      const response = await fetch(apiUrl('/api/portfolio/extract'), {
         method: 'POST',
         body: payload,
       })
@@ -804,7 +834,7 @@ function App() {
       <main className="state-screen">
         <Activity size={32} />
         <h1>We couldn’t load the portfolio</h1>
-        <p>{error} Start the Flask backend on port 5000 and refresh this page.</p>
+        <p>{error}{PUBLIC_DEMO_MODE ? ' Refresh this page or try again later.' : ' Start the Flask backend on port 5000 and refresh this page.'}</p>
       </main>
     )
   }
@@ -859,10 +889,26 @@ function App() {
         <header className="topbar">
           <div className="mobile-brand"><TrendingUp size={18} />PortfolioLens</div>
           <label className="search-box"><Search size={17} /><input placeholder="Search holdings…" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} /></label>
-          <div className="top-actions"><button className="notification"><Bell size={19} /><i /></button><button className="upload-button" onClick={() => setModalOpen(true)}><FileUp size={17} />Add portfolio</button></div>
+          <div className="top-actions">
+            <button className="notification"><Bell size={19} /><i /></button>
+            {PUBLIC_DEMO_MODE ? (
+              <button className="upload-button demo-button" disabled><ShieldCheck size={17} />Public demo</button>
+            ) : (
+              <button className="upload-button" onClick={() => setModalOpen(true)}><FileUp size={17} />Add portfolio</button>
+            )}
+          </div>
         </header>
 
         <div className="page" id="overview">
+          {PUBLIC_DEMO_MODE && (
+            <div className="public-demo-banner">
+              <ShieldCheck size={17} />
+              <div>
+                <strong>Safe public showcase</strong>
+                <span>Explore the complete dashboard with demonstration data. Uploads and paid AI actions are disabled to protect private information and API credit.</span>
+              </div>
+            </div>
+          )}
           <section className="hero-row">
             <div><p className="eyebrow">Portfolio overview</p><h1>Good afternoon, Hisham.</h1><p>Here’s how your investments are positioned today.</p></div>
             <div className="portfolio-select"><span>Viewing portfolio</span><button>{meta.portfolio_name}<ChevronDown size={16} /></button></div>
@@ -1011,7 +1057,11 @@ function App() {
             </div>
           </section>
 
-          <PortfolioReport key={portfolioReportCacheKey(portfolio)} portfolio={portfolio} />
+          <PortfolioReport
+            key={portfolioReportCacheKey(portfolio)}
+            portfolio={portfolio}
+            publicDemoMode={PUBLIC_DEMO_MODE}
+          />
 
           <section className="lower-grid">
             <article className="panel holdings-panel" id="holdings">

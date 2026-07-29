@@ -45,8 +45,13 @@ button { cursor: pointer; }
 .notification { position: relative; display: grid; place-items: center; width: 39px; height: 39px; color: #8ea198; background: #0b1913; border: 1px solid #193027; border-radius: 10px; }
 .notification i { position: absolute; top: 8px; right: 8px; width: 5px; height: 5px; background: #ff6d85; border-radius: 50%; }
 .upload-button { display: flex; align-items: center; gap: 8px; padding: 10px 15px; color: #06110c; background: var(--green); border: 0; border-radius: 10px; font-weight: 700; box-shadow: 0 8px 25px #39e58c1c; }
+.upload-button.demo-button { color: #93a89e; background: #12251c; border: 1px solid #254234; box-shadow: none; cursor: default; }
 
 .page { max-width: 1530px; margin: auto; padding: 32px 34px 22px; }
+.public-demo-banner { display: flex; align-items: center; gap: 11px; margin-bottom: 18px; padding: 12px 14px; color: #71eda7; background: linear-gradient(90deg, #102a1d, #0d2118); border: 1px solid #24513a; border-radius: 12px; }
+.public-demo-banner > div { display: grid; gap: 2px; }
+.public-demo-banner strong { color: #cdeade; font-size: 10px; }
+.public-demo-banner span { color: #769487; font-size: 9px; line-height: 1.45; }
 .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 25px; margin-bottom: 20px; }
 .eyebrow { margin: 0 0 6px !important; color: var(--green) !important; font-size: 11px !important; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .hero-row h1 { margin: 0 0 7px; font: 700 clamp(24px, 3vw, 34px) 'Segoe UI'; letter-spacing: -.035em; }
@@ -177,6 +182,7 @@ button { cursor: pointer; }
 .report-mode-tabs button.active { color: #e1efe8; background: #153326; box-shadow: inset 0 0 0 1px #28513d; }
 .report-mode-tabs button.active svg { color: var(--green); }
 .report-mode-tabs button.active small { color: #83a293; }
+.report-mode-tabs button:disabled { opacity: .52; cursor: not-allowed; }
 .ai-report-gate { display: grid; place-items: center; padding: 28px; background: radial-gradient(circle at 50% 0, #172b39, #0a1913 58%); border: 1px solid #1d3a31; border-radius: 14px; text-align: center; }
 .ai-gate-icon { display: grid; place-items: center; width: 58px; height: 58px; margin-bottom: 12px; color: #8abaff; background: #142d43; border: 1px solid #254d6d; border-radius: 16px; box-shadow: 0 0 30px #65a6ff18; }
 .ai-gate-copy { display: grid; place-items: center; }

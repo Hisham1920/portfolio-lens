@@ -4,6 +4,25 @@ PortfolioLens turns Indian equity holdings into understandable performance, allo
 
 Milestone 5 adds a readable portfolio report and PDF export to the existing AI-assisted extraction and local analytics engine. The default report is generated from verified metrics without an API call. An optional AI interpretation is available only after separate consent and is cached in the browser to avoid paying for the same report twice.
 
+## Safe public showcase
+
+The production frontend build runs as a demonstration-only showcase by default:
+
+- It loads bundled demonstration portfolio data without requiring Flask.
+- Portfolio uploads and paid AI actions are disabled.
+- The automated written report and sample PDF download remain available.
+- The private local version keeps the complete upload, analysis, AI, and PDF workflow.
+
+This makes it safe to host the `frontend` folder on Vercel without publishing an OpenAI API key or allowing visitors to spend API credit. When a protected production backend is added later, set `VITE_PUBLIC_DEMO=false` and configure `VITE_API_URL` to its HTTPS address.
+
+### Vercel settings
+
+1. Import the GitHub repository into Vercel.
+2. Set **Root Directory** to `frontend`.
+3. Vercel detects Vite and uses `npm run build`.
+4. The output directory is `dist`.
+5. Do not add `OPENAI_API_KEY` to the frontend project.
+
 ## What works
 
 - Upload JPG, JPEG, PNG, or PDF portfolio files

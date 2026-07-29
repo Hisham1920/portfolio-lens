@@ -1,0 +1,423 @@
+{
+  "meta": {
+    "portfolio_name": "Demo Indian Equity Portfolio",
+    "currency": "INR",
+    "generated_at": "2026-07-29T11:27:11.017786+00:00",
+    "data_notice": "Public demonstration data - not live market prices."
+  },
+  "summary": {
+    "invested_value": 205451.0,
+    "current_value": 217088.7,
+    "total_pnl": 11637.7,
+    "total_return": 5.66,
+    "holdings_count": 8,
+    "sectors_count": 6,
+    "risk_score": 41.24,
+    "diversification_score": 72.5,
+    "health_score": 65.63,
+    "largest_holding_weight": 17.82,
+    "top_three_weight": 47.56,
+    "concentration_index": 0.132,
+    "effective_holdings": 7.5,
+    "winners_count": 5,
+    "losers_count": 3,
+    "flat_count": 0
+  },
+  "performance": {
+    "gross_gains": 15639.6,
+    "gross_losses": 4001.9,
+    "profit_factor": 3.91,
+    "profitable_weight": 67.32,
+    "loss_making_weight": 32.68,
+    "best_holding": {
+      "symbol": "HDFCBANK",
+      "return_percentage": 13.94,
+      "pnl": 4734.0
+    },
+    "worst_holding": {
+      "symbol": "KPITTECH",
+      "return_percentage": -7.45,
+      "pnl": -1273.2
+    }
+  },
+  "concentration": {
+    "level": "Moderate",
+    "largest_holding": "HDFCBANK",
+    "largest_holding_weight": 17.82,
+    "top_three_weight": 47.56,
+    "largest_sector": "Technology",
+    "largest_sector_weight": 37.03,
+    "effective_holdings": 7.5,
+    "equal_weight_reference": 12.5
+  },
+  "holdings": [
+    {
+      "symbol": "HDFCBANK",
+      "company": "HDFC Bank",
+      "quantity": 20,
+      "average_price": 1698.0,
+      "current_price": 1934.7,
+      "sector": "Financials",
+      "market_cap": "Large Cap",
+      "invested_value": 33960.0,
+      "current_value": 38694.0,
+      "pnl": 4734.0,
+      "return_percentage": 13.94,
+      "weight": 17.82,
+      "return_contribution": 2.3,
+      "move_to_break_even": -12.23,
+      "equal_weight_gap": 5.32
+    },
+    {
+      "symbol": "COFORGE",
+      "company": "Coforge Limited",
+      "quantity": 5,
+      "average_price": 6190.0,
+      "current_price": 6765.0,
+      "sector": "Technology",
+      "market_cap": "Mid Cap",
+      "invested_value": 30950.0,
+      "current_value": 33825.0,
+      "pnl": 2875.0,
+      "return_percentage": 9.29,
+      "weight": 15.58,
+      "return_contribution": 1.4,
+      "move_to_break_even": -8.5,
+      "equal_weight_gap": 3.08
+    },
+    {
+      "symbol": "TCS",
+      "company": "Tata Consultancy Services",
+      "quantity": 8,
+      "average_price": 3975.0,
+      "current_price": 3842.6,
+      "sector": "Technology",
+      "market_cap": "Large Cap",
+      "invested_value": 31800.0,
+      "current_value": 30740.8,
+      "pnl": -1059.2,
+      "return_percentage": -3.33,
+      "weight": 14.16,
+      "return_contribution": -0.52,
+      "move_to_break_even": 3.45,
+      "equal_weight_gap": 1.66
+    },
+    {
+      "symbol": "RELIANCE",
+      "company": "Reliance Industries",
+      "quantity": 18,
+      "average_price": 1284.5,
+      "current_price": 1461.2,
+      "sector": "Energy",
+      "market_cap": "Large Cap",
+      "invested_value": 23121.0,
+      "current_value": 26301.6,
+      "pnl": 3180.6,
+      "return_percentage": 13.76,
+      "weight": 12.12,
+      "return_contribution": 1.55,
+      "move_to_break_even": -12.09,
+      "equal_weight_gap": -0.38
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "company": "Tata Motors",
+      "quantity": 30,
+      "average_price": 868.0,
+      "current_price": 812.35,
+      "sector": "Automobile",
+      "market_cap": "Large Cap",
+      "invested_value": 26040.0,
+      "current_value": 24370.5,
+      "pnl": -1669.5,
+      "return_percentage": -6.41,
+      "weight": 11.23,
+      "return_contribution": -0.81,
+      "move_to_break_even": 6.85,
+      "equal_weight_gap": -1.27
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "company": "Sun Pharmaceutical",
+      "quantity": 14,
+      "average_price": 1540.0,
+      "current_price": 1738.4,
+      "sector": "Healthcare",
+      "market_cap": "Large Cap",
+      "invested_value": 21560.0,
+      "current_value": 24337.6,
+      "pnl": 2777.6,
+      "return_percentage": 12.88,
+      "weight": 11.21,
+      "return_contribution": 1.35,
+      "move_to_break_even": -11.41,
+      "equal_weight_gap": -1.29
+    },
+    {
+      "symbol": "TRENT",
+      "company": "Trent Limited",
+      "quantity": 4,
+      "average_price": 5230.0,
+      "current_price": 5748.1,
+      "sector": "Consumer",
+      "market_cap": "Large Cap",
+      "invested_value": 20920.0,
+      "current_value": 22992.4,
+      "pnl": 2072.4,
+      "return_percentage": 9.91,
+      "weight": 10.59,
+      "return_contribution": 1.01,
+      "move_to_break_even": -9.01,
+      "equal_weight_gap": -1.91
+    },
+    {
+      "symbol": "KPITTECH",
+      "company": "KPIT Technologies",
+      "quantity": 12,
+      "average_price": 1425.0,
+      "current_price": 1318.9,
+      "sector": "Technology",
+      "market_cap": "Mid Cap",
+      "invested_value": 17100.0,
+      "current_value": 15826.8,
+      "pnl": -1273.2,
+      "return_percentage": -7.45,
+      "weight": 7.29,
+      "return_contribution": -0.62,
+      "move_to_break_even": 8.04,
+      "equal_weight_gap": -5.21
+    }
+  ],
+  "sector_allocation": [
+    {
+      "name": "Technology",
+      "value": 80392.6,
+      "percentage": 37.03
+    },
+    {
+      "name": "Financials",
+      "value": 38694.0,
+      "percentage": 17.82
+    },
+    {
+      "name": "Energy",
+      "value": 26301.6,
+      "percentage": 12.12
+    },
+    {
+      "name": "Automobile",
+      "value": 24370.5,
+      "percentage": 11.23
+    },
+    {
+      "name": "Healthcare",
+      "value": 24337.6,
+      "percentage": 11.21
+    },
+    {
+      "name": "Consumer",
+      "value": 22992.4,
+      "percentage": 10.59
+    }
+  ],
+  "market_cap_allocation": [
+    {
+      "name": "Large Cap",
+      "value": 167436.9,
+      "percentage": 77.13
+    },
+    {
+      "name": "Mid Cap",
+      "value": 49651.8,
+      "percentage": 22.87
+    }
+  ],
+  "sector_performance": [
+    {
+      "name": "Technology",
+      "invested_value": 79850.0,
+      "current_value": 80392.6,
+      "pnl": 542.6,
+      "return_percentage": 0.68,
+      "weight": 37.03
+    },
+    {
+      "name": "Financials",
+      "invested_value": 33960.0,
+      "current_value": 38694.0,
+      "pnl": 4734.0,
+      "return_percentage": 13.94,
+      "weight": 17.82
+    },
+    {
+      "name": "Energy",
+      "invested_value": 23121.0,
+      "current_value": 26301.6,
+      "pnl": 3180.6,
+      "return_percentage": 13.76,
+      "weight": 12.12
+    },
+    {
+      "name": "Automobile",
+      "invested_value": 26040.0,
+      "current_value": 24370.5,
+      "pnl": -1669.5,
+      "return_percentage": -6.41,
+      "weight": 11.23
+    },
+    {
+      "name": "Healthcare",
+      "invested_value": 21560.0,
+      "current_value": 24337.6,
+      "pnl": 2777.6,
+      "return_percentage": 12.88,
+      "weight": 11.21
+    },
+    {
+      "name": "Consumer",
+      "invested_value": 20920.0,
+      "current_value": 22992.4,
+      "pnl": 2072.4,
+      "return_percentage": 9.91,
+      "weight": 10.59
+    }
+  ],
+  "market_cap_performance": [
+    {
+      "name": "Large Cap",
+      "invested_value": 157401.0,
+      "current_value": 167436.9,
+      "pnl": 10035.9,
+      "return_percentage": 6.38,
+      "weight": 77.13
+    },
+    {
+      "name": "Mid Cap",
+      "invested_value": 48050.0,
+      "current_value": 49651.8,
+      "pnl": 1601.8,
+      "return_percentage": 3.33,
+      "weight": 22.87
+    }
+  ],
+  "risk_breakdown": [
+    {
+      "name": "Single-stock concentration",
+      "score": 44.55,
+      "level": "Moderate",
+      "detail": "Largest holding is 17.8%."
+    },
+    {
+      "name": "Sector concentration",
+      "score": 74.06,
+      "level": "High",
+      "detail": "Technology is 37.0%."
+    },
+    {
+      "name": "Mid/small-cap exposure",
+      "score": 22.87,
+      "level": "Low",
+      "detail": "Mid and small caps form 22.9%."
+    },
+    {
+      "name": "Limited breadth",
+      "score": 0.0,
+      "level": "Low",
+      "detail": "Portfolio contains 8 holdings."
+    }
+  ],
+  "stress_scenarios": [
+    {
+      "name": "Broad market correction",
+      "description": "Every holding declines by 10%.",
+      "shock_percentage": -10,
+      "affected_value": 217088.7,
+      "estimated_change": -21708.87,
+      "portfolio_impact_percentage": -10.0,
+      "stressed_value": 195379.83
+    },
+    {
+      "name": "Technology sector shock",
+      "description": "The largest sector declines by 15%.",
+      "shock_percentage": -15,
+      "affected_value": 80392.6,
+      "estimated_change": -12058.89,
+      "portfolio_impact_percentage": -5.55,
+      "stressed_value": 205029.81
+    },
+    {
+      "name": "Mid/small-cap selloff",
+      "description": "Mid and small-cap holdings decline by 20%.",
+      "shock_percentage": -20,
+      "affected_value": 49651.8,
+      "estimated_change": -9930.36,
+      "portfolio_impact_percentage": -4.57,
+      "stressed_value": 207158.34
+    },
+    {
+      "name": "HDFCBANK drawdown",
+      "description": "The largest holding declines by 25%.",
+      "shock_percentage": -25,
+      "affected_value": 38694.0,
+      "estimated_change": -9673.5,
+      "portfolio_impact_percentage": -4.46,
+      "stressed_value": 207415.2
+    }
+  ],
+  "insights": [
+    {
+      "type": "positive",
+      "title": "Controlled stock exposure",
+      "message": "The largest holding is HDFCBANK at 17.8%."
+    },
+    {
+      "type": "warning",
+      "title": "Sector dependence",
+      "message": "Technology contributes 37.0% of current value."
+    },
+    {
+      "type": "neutral",
+      "title": "Return drag",
+      "message": "TATAMOTORS, KPITTECH, TCS reduce total return by approximately 2.0 percentage points."
+    },
+    {
+      "type": "positive",
+      "title": "Largest return driver",
+      "message": "HDFCBANK contributes 2.3 percentage points to portfolio return."
+    }
+  ],
+  "automated_report": {
+    "executive_summary": "Demo Indian Equity Portfolio has a health score of 66/100, a +5.66% total return, and a moderate concentration classification. The portfolio is currently driven by HDFCBANK, while KPITTECH deserves the closest performance review.",
+    "strengths": [
+      "The portfolio is above acquisition cost by INR 11,638, equal to +5.66%.",
+      "The diversification score is 72/100 across 6 sectors.",
+      "The calculated portfolio risk score is contained at 41.2/100.",
+      "5 of 8 holdings are currently profitable."
+    ],
+    "watch_items": [
+      "Concentration is moderate: the top three holdings form 47.6%.",
+      "Technology is the largest sector at 37.0%.",
+      "3 holding(s) trade below acquisition cost, led by KPITTECH.",
+      "The largest risk flag is sector concentration: Technology is 37.0%."
+    ],
+    "sections": [
+      {
+        "heading": "Performance overview",
+        "body": "Current value is INR 217,089 against INR 205,451 invested. Gross gains are INR 15,640 and gross losses are INR 4,002. HDFCBANK is the strongest holding at +13.94%, while KPITTECH is the weakest at -7.45%."
+      },
+      {
+        "heading": "Diversification and concentration",
+        "body": "The portfolio contains 8 holdings across 6 sectors, but its effective-holdings measure is 7.5. The largest position is HDFCBANK at 17.8%, and the top three positions together account for 47.6%."
+      },
+      {
+        "heading": "Sector and risk profile",
+        "body": "Financials is the strongest sector by return at +13.94%; Automobile is the weakest at -6.41%. The overall heuristic risk score is 41.2/100, with sector concentration currently producing the largest risk indicator."
+      },
+      {
+        "heading": "Stress-test interpretation",
+        "body": "Among the preset illustrations, 'Broad market correction' has the largest estimated effect at -10.00%, taking portfolio value to approximately INR 195,380. These scenarios are linear sensitivity checks rather than forecasts."
+      }
+    ],
+    "closing_summary": "Overall, the portfolio combines positive return drivers with identifiable concentration and downside sensitivities. Future decisions should also consider the investor's goals, time horizon, liquidity needs, and risk tolerance, none of which are inferred here."
+  }
+}
