@@ -1,8 +1,8 @@
-# PortfolioLens — Milestone 5
+# PortfolioLens — Milestone 6
 
 PortfolioLens turns Indian equity holdings into understandable performance, allocation, concentration, and risk insights.
 
-Milestone 5 adds a readable portfolio report and PDF export to the existing AI-assisted extraction and local analytics engine. The default report is generated from verified metrics without an API call. An optional AI interpretation is available only after separate consent and is cached in the browser to avoid paying for the same report twice.
+Milestone 6 adds a free, cached NSE market-snapshot refresh to the AI-assisted extraction, local analytics engine, written report, and PDF export. The refresh updates supported symbols and immediately recalculates every portfolio metric. It does not consume OpenAI API credit.
 
 ## Safe public showcase
 
@@ -49,6 +49,11 @@ This makes it safe to host the `frontend` folder on Vercel without publishing an
 - Clear source label: `Automated analysis` or `AI-generated interpretation`
 - Browser caching for each AI report based on its holdings and prices
 - Download either report as a polished PDF
+- Refresh supported NSE holdings with the latest available Yahoo Finance market snapshot
+- Preserve the previous manual price when an individual symbol cannot be refreshed
+- Cache market prices for five minutes to reduce provider traffic and rate-limit risk
+- Name failed symbols and show corporate-action suggestions instead of silently substituting an unsafe ticker
+- Normalise common broker formats such as `NSE:RELIANCE`, `NSE_EQ|RELIANCE`, and `RELIANCE-EQ`
 
 The Upstox reference screenshot is intentionally treated as two visible holdings: CDSL and IRCON. A heading such as `Holdings (9)` never causes hidden rows to be invented.
 
@@ -67,6 +72,7 @@ The Upstox reference screenshot is intentionally treated as two visible holdings
 | Reopening an unchanged cached AI report in the same browser | No |
 | Downloading an already-generated AI report as PDF | No |
 | Searching or filtering holdings | No |
+| Refreshing the latest available market snapshot | No |
 
 You can therefore extract once, verify the holdings, and use the full analytics dashboard, free written report, stress tests, and PDF export without spending more API credit. The AI report is always optional.
 
@@ -79,8 +85,26 @@ You can therefore extract once, verify the holdings, and use the full analytics 
 - AI extraction can make mistakes. The review screen is mandatory.
 - AI-written reports interpret calculated figures but may still contain mistakes. They are clearly labelled and should be verified.
 - The cached AI report is stored only in that browser's local storage and is replaced when the portfolio inputs change.
-- Current price is read from the uploaded file or entered manually; live market data is not connected yet.
+- Yahoo Finance snapshots may be delayed and are not exchange-certified real-time quotes.
+- The free Yahoo endpoint is appropriate for this local MVP, not a licensed commercial market-data feed.
+- A production trading product should switch the provider layer to an authorised broker or exchange-data service.
 - PortfolioLens provides educational analytics, not investment advice.
+
+## Market-price refresh
+
+Run the complete local app, analyse a portfolio, and press **Refresh market prices** above the dashboard metrics. PortfolioLens converts supported symbols such as `RELIANCE` to their NSE ticker (`RELIANCE.NS`), retrieves the latest available snapshot, and recalculates the portfolio.
+
+No market-data API key is required for this MVP. The backend caches each quote for five minutes. You can change the cache duration in `backend/.env`:
+
+```env
+MARKET_PRICE_CACHE_SECONDS=300
+```
+
+The public Vercel showcase remains demonstration-only, so visitors cannot call the private local backend or create API costs. For a future production release, replace the Yahoo provider with a licensed feed such as Upstox Market Data, DhanHQ, or Zerodha Kite Connect and host the protected backend separately.
+
+Local Vite addresses such as `http://localhost:5173` and `http://localhost:5174` are accepted automatically. If you later host a protected backend, add the exact production frontend origin to `FRONTEND_ORIGINS` in `backend/.env`.
+
+The legacy `TATAMOTORS` symbol is intentionally not replaced automatically. Following the Tata Motors demerger, a user may need `TMPV`, `TMCV`, or both, with separately verified acquisition costs. PortfolioLens names this issue and keeps the existing price until the user reviews it.
 
 ## Easiest Windows start
 

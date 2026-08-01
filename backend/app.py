@@ -1,4 +1,6 @@
 import io
+import os
+import re
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_file
@@ -6,6 +8,7 @@ from pydantic import ValidationError
 from werkzeug.utils import secure_filename
 
 from services.portfolio_analyser import analyse_portfolio
+from services.market_data import MarketDataError, refresh_holdings_prices
 from services.document_extractor import (
     DocumentExtractionError,
     extract_portfolio_documents,
@@ -29,7 +32,16 @@ app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    origin = request.headers.get("Origin", "")
+    configured_origins = {
+        item.strip()
+        for item in os.getenv("FRONTEND_ORIGINS", "").split(",")
+        if item.strip()
+    }
+    is_local_vite = re.fullmatch(r"http://(?:localhost|127\.0\.0\.1):\d+", origin)
+    if origin in configured_origins or is_local_vite:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
@@ -59,9 +71,33 @@ def analyse():
             analyse_portfolio(
                 holdings,
                 portfolio_name=portfolio_name[:60],
-                data_notice="Analysis uses the prices you supplied — live market data comes next.",
+                data_notice="Analysis currently uses the prices you supplied. Use Refresh market prices for the latest available NSE snapshot.",
             )
         )
+    except (KeyError, TypeError, ValueError) as error:
+        return jsonify({"error": str(error)}), 400
+
+
+@app.post("/api/portfolio/refresh-prices")
+def refresh_portfolio_market_prices():
+    payload = request.get_json(silent=True) or {}
+    holdings = payload.get("holdings")
+    portfolio_name = str(payload.get("portfolio_name") or "My Portfolio").strip()
+
+    try:
+        refreshed_holdings, market_meta = refresh_holdings_prices(holdings)
+        analysis = analyse_portfolio(
+            refreshed_holdings,
+            portfolio_name=portfolio_name[:60],
+            data_notice=(
+                "Latest available NSE market snapshot from Yahoo Finance. "
+                "Prices may be delayed and are not exchange-certified real-time quotes."
+            ),
+        )
+        analysis["meta"]["market_data"] = market_meta
+        return jsonify(analysis)
+    except MarketDataError as error:
+        return jsonify({"error": str(error)}), error.status_code
     except (KeyError, TypeError, ValueError) as error:
         return jsonify({"error": str(error)}), 400
 
