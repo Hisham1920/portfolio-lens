@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   ChevronDown,
   CircleDollarSign,
+  Clock3,
   Crosshair,
   Download,
   FileImage,
@@ -23,6 +24,7 @@ import {
   PencilLine,
   PieChart as PieChartIcon,
   Plus,
+  RefreshCw,
   Search,
   ShieldCheck,
   SlidersHorizontal,
@@ -655,7 +657,7 @@ function ManualPortfolioModal({ onClose, onAnalyse, onExtract, analysing, extrac
                 ) : (
                   <div className="entry-help">
                     <PencilLine size={16} />
-                    <p>Enter the current price shown by your broker. Live market prices are not connected yet.</p>
+                    <p>Enter the price shown by your broker. After analysis, Refresh market prices can replace supported NSE prices with the latest available snapshot.</p>
                   </div>
                 )}
 
@@ -739,6 +741,8 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false)
   const [analysing, setAnalysing] = useState(false)
   const [extracting, setExtracting] = useState(false)
+  const [priceRefreshing, setPriceRefreshing] = useState(false)
+  const [priceError, setPriceError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -829,6 +833,32 @@ function App() {
     }
   }
 
+  const refreshMarketPrices = async () => {
+    if (PUBLIC_DEMO_MODE || !portfolio) return
+    setPriceRefreshing(true)
+    setPriceError('')
+    try {
+      const response = await fetch(apiUrl('/api/portfolio/refresh-prices'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          portfolio_name: portfolio.meta.portfolio_name,
+          holdings: reportHoldings(portfolio),
+        }),
+      })
+      const result = await responseJson(
+        response,
+        'The price service returned an unexpected response. Confirm the latest backend is running.',
+      )
+      if (!response.ok) throw new Error(result.error || 'Market-price refresh failed.')
+      setPortfolio(result)
+    } catch (requestError) {
+      setPriceError(requestError.message)
+    } finally {
+      setPriceRefreshing(false)
+    }
+  }
+
   if (error) {
     return (
       <main className="state-screen">
@@ -856,6 +886,10 @@ function App() {
     meta,
   } = portfolio
   const positiveReturn = summary.total_pnl >= 0
+  const marketData = meta.market_data
+  const marketUpdateTime = marketData?.fetched_at
+    ? new Date(marketData.fetched_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : ''
 
   return (
     <div className="app-shell">
@@ -914,7 +948,45 @@ function App() {
             <div className="portfolio-select"><span>Viewing portfolio</span><button>{meta.portfolio_name}<ChevronDown size={16} /></button></div>
           </section>
 
-          <div className="notice"><span className="notice-dot" />{meta.data_notice}</div>
+          <div className="market-data-row">
+            <div className="notice"><span className="notice-dot" />{meta.data_notice}</div>
+            {!PUBLIC_DEMO_MODE && (
+              <button className="refresh-prices-button" onClick={refreshMarketPrices} disabled={priceRefreshing}>
+                <RefreshCw className={priceRefreshing ? 'spin-icon' : ''} size={15} />
+                {priceRefreshing ? 'Refreshing…' : 'Refresh market prices'}
+              </button>
+            )}
+          </div>
+          {marketData && (
+            <div className="market-data-status">
+              <Clock3 size={14} />
+              <span>
+                {marketData.provider} snapshot updated at {marketUpdateTime}.
+                {' '}{marketData.refreshed_count} symbol{marketData.refreshed_count === 1 ? '' : 's'} refreshed
+                {marketData.cache_hits ? ` (${marketData.cache_hits} from cache)` : ''}.
+              </span>
+              {marketData.failed_count > 0 && (
+                <strong>
+                  Needs review: {marketData.failed_symbols.map((item) => item.symbol).join(', ')}.
+                </strong>
+              )}
+            </div>
+          )}
+          {marketData?.failed_symbols?.map((failure) => (
+            <div className="market-symbol-warning" key={failure.symbol}>
+              <TriangleAlert size={15} />
+              <div>
+                <strong>{failure.symbol} kept its previous price</strong>
+                <span>{failure.reason}</span>
+                {failure.suggested_symbols?.length > 0 && (
+                  <small>Suggested symbols to review: {failure.suggested_symbols.join(' and ')}.</small>
+                )}
+              </div>
+            </div>
+          ))}
+          {priceError && (
+            <div className="price-refresh-error"><TriangleAlert size={15} /><span>{priceError}</span></div>
+          )}
 
           <section className="metrics-grid">
             <MetricCard label="Current value" value={money.format(summary.current_value)} note={`${summary.holdings_count} holdings across ${summary.sectors_count} sectors`} icon={WalletCards} />
