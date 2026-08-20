@@ -77,6 +77,22 @@ class PortfolioAnalyserTest(unittest.TestCase):
             )
         )
 
+    def test_structural_risk_methodology_is_explainable(self):
+        result = analyse_portfolio(DEMO_HOLDINGS)
+        methodology = result["risk_methodology"]
+        breakdown = result["risk_breakdown"]
+
+        self.assertEqual(methodology["name"], "Structural risk score")
+        self.assertEqual(methodology["score"], result["summary"]["risk_score"])
+        self.assertEqual(sum(item["weight"] for item in breakdown), 100)
+        self.assertAlmostEqual(
+            sum(item["contribution"] for item in breakdown),
+            result["summary"]["risk_score"],
+            delta=0.05,
+        )
+        self.assertIn("not part of this structural score", methodology["performance_context"])
+        self.assertGreaterEqual(len(methodology["does_not_include"]), 4)
+
 
 if __name__ == "__main__":
     unittest.main()

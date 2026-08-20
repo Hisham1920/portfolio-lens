@@ -9,6 +9,10 @@ from werkzeug.utils import secure_filename
 
 from services.portfolio_analyser import analyse_portfolio
 from services.market_data import MarketDataError, refresh_holdings_prices
+from services.corporate_actions import (
+    CorporateActionError,
+    resolve_tata_motors_demerger,
+)
 from services.document_extractor import (
     DocumentExtractionError,
     extract_portfolio_documents,
@@ -98,6 +102,48 @@ def refresh_portfolio_market_prices():
         return jsonify(analysis)
     except MarketDataError as error:
         return jsonify({"error": str(error)}), error.status_code
+    except (KeyError, TypeError, ValueError) as error:
+        return jsonify({"error": str(error)}), 400
+
+
+@app.post("/api/portfolio/resolve-corporate-action")
+def resolve_portfolio_corporate_action():
+    payload = request.get_json(silent=True) or {}
+    holdings = payload.get("holdings")
+    portfolio_name = str(payload.get("portfolio_name") or "My Portfolio").strip()
+
+    try:
+        resolved_holdings, resolution = resolve_tata_motors_demerger(
+            holdings,
+            held_on_record_date=payload.get("held_on_record_date") is True,
+        )
+        try:
+            resolved_holdings, market_meta = refresh_holdings_prices(resolved_holdings)
+            data_notice = (
+                "Tata Motors demerger resolved using the confirmed entitlement and "
+                "official cost allocation. Latest available NSE snapshots may be delayed."
+            )
+            resolution["market_prices_refreshed"] = True
+        except MarketDataError as market_error:
+            market_meta = None
+            data_notice = (
+                "Tata Motors demerger resolved. TMPV and TMCV temporarily preserve the "
+                "legacy position value; refresh market prices when the provider is available."
+            )
+            resolution["market_prices_refreshed"] = False
+            resolution["market_price_warning"] = str(market_error)
+
+        analysis = analyse_portfolio(
+            resolved_holdings,
+            portfolio_name=portfolio_name[:60],
+            data_notice=data_notice,
+        )
+        analysis["meta"]["corporate_action_resolution"] = resolution
+        if market_meta:
+            analysis["meta"]["market_data"] = market_meta
+        return jsonify(analysis)
+    except CorporateActionError as error:
+        return jsonify({"error": str(error)}), 400
     except (KeyError, TypeError, ValueError) as error:
         return jsonify({"error": str(error)}), 400
 

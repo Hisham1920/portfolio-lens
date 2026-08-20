@@ -2,7 +2,7 @@
   "meta": {
     "portfolio_name": "Demo Indian Equity Portfolio",
     "currency": "INR",
-    "generated_at": "2026-07-29T11:27:11.017786+00:00",
+    "generated_at": "2026-08-20T05:53:16.036803+00:00",
     "data_notice": "Public demonstration data - not live market prices."
   },
   "summary": {
@@ -10,17 +10,17 @@
     "current_value": 217088.7,
     "total_pnl": 11637.7,
     "total_return": 5.66,
-    "holdings_count": 8,
+    "holdings_count": 9,
     "sectors_count": 6,
     "risk_score": 41.24,
-    "diversification_score": 72.5,
-    "health_score": 65.63,
+    "diversification_score": 75.0,
+    "health_score": 66.63,
     "largest_holding_weight": 17.82,
     "top_three_weight": 47.56,
-    "concentration_index": 0.132,
-    "effective_holdings": 7.5,
+    "concentration_index": 0.127,
+    "effective_holdings": 7.9,
     "winners_count": 5,
-    "losers_count": 3,
+    "losers_count": 4,
     "flat_count": 0
   },
   "performance": {
@@ -47,8 +47,8 @@
     "top_three_weight": 47.56,
     "largest_sector": "Technology",
     "largest_sector_weight": 37.03,
-    "effective_holdings": 7.5,
-    "equal_weight_reference": 12.5
+    "effective_holdings": 7.9,
+    "equal_weight_reference": 11.11
   },
   "holdings": [
     {
@@ -66,7 +66,7 @@
       "weight": 17.82,
       "return_contribution": 2.3,
       "move_to_break_even": -12.23,
-      "equal_weight_gap": 5.32
+      "equal_weight_gap": 6.71
     },
     {
       "symbol": "COFORGE",
@@ -83,7 +83,7 @@
       "weight": 15.58,
       "return_contribution": 1.4,
       "move_to_break_even": -8.5,
-      "equal_weight_gap": 3.08
+      "equal_weight_gap": 4.47
     },
     {
       "symbol": "TCS",
@@ -100,7 +100,7 @@
       "weight": 14.16,
       "return_contribution": -0.52,
       "move_to_break_even": 3.45,
-      "equal_weight_gap": 1.66
+      "equal_weight_gap": 3.05
     },
     {
       "symbol": "RELIANCE",
@@ -117,24 +117,7 @@
       "weight": 12.12,
       "return_contribution": 1.55,
       "move_to_break_even": -12.09,
-      "equal_weight_gap": -0.38
-    },
-    {
-      "symbol": "TATAMOTORS",
-      "company": "Tata Motors",
-      "quantity": 30,
-      "average_price": 868.0,
-      "current_price": 812.35,
-      "sector": "Automobile",
-      "market_cap": "Large Cap",
-      "invested_value": 26040.0,
-      "current_value": 24370.5,
-      "pnl": -1669.5,
-      "return_percentage": -6.41,
-      "weight": 11.23,
-      "return_contribution": -0.81,
-      "move_to_break_even": 6.85,
-      "equal_weight_gap": -1.27
+      "equal_weight_gap": 1.01
     },
     {
       "symbol": "SUNPHARMA",
@@ -151,7 +134,7 @@
       "weight": 11.21,
       "return_contribution": 1.35,
       "move_to_break_even": -11.41,
-      "equal_weight_gap": -1.29
+      "equal_weight_gap": 0.1
     },
     {
       "symbol": "TRENT",
@@ -168,7 +151,24 @@
       "weight": 10.59,
       "return_contribution": 1.01,
       "move_to_break_even": -9.01,
-      "equal_weight_gap": -1.91
+      "equal_weight_gap": -0.52
+    },
+    {
+      "symbol": "TMPV",
+      "company": "Tata Motors Passenger Vehicles Limited",
+      "quantity": 30,
+      "average_price": 597.62,
+      "current_price": 559.3,
+      "sector": "Automobile",
+      "market_cap": "Large Cap",
+      "invested_value": 17928.6,
+      "current_value": 16779.0,
+      "pnl": -1149.6,
+      "return_percentage": -6.41,
+      "weight": 7.73,
+      "return_contribution": -0.56,
+      "move_to_break_even": 6.85,
+      "equal_weight_gap": -3.38
     },
     {
       "symbol": "KPITTECH",
@@ -185,7 +185,24 @@
       "weight": 7.29,
       "return_contribution": -0.62,
       "move_to_break_even": 8.04,
-      "equal_weight_gap": -5.21
+      "equal_weight_gap": -3.82
+    },
+    {
+      "symbol": "TMCV",
+      "company": "Tata Motors Limited (Commercial Vehicles)",
+      "quantity": 30,
+      "average_price": 270.38,
+      "current_price": 253.05,
+      "sector": "Automobile",
+      "market_cap": "Large Cap",
+      "invested_value": 8111.4,
+      "current_value": 7591.5,
+      "pnl": -519.9,
+      "return_percentage": -6.41,
+      "weight": 3.5,
+      "return_contribution": -0.25,
+      "move_to_break_even": 6.85,
+      "equal_weight_gap": -7.61
     }
   ],
   "sector_allocation": [
@@ -304,28 +321,51 @@
     {
       "name": "Single-stock concentration",
       "score": 44.55,
+      "weight": 35,
+      "contribution": 15.59,
       "level": "Moderate",
       "detail": "Largest holding is 17.8%."
     },
     {
       "name": "Sector concentration",
       "score": 74.06,
+      "weight": 30,
+      "contribution": 22.22,
       "level": "High",
       "detail": "Technology is 37.0%."
     },
     {
       "name": "Mid/small-cap exposure",
       "score": 22.87,
+      "weight": 15,
+      "contribution": 3.43,
       "level": "Low",
       "detail": "Mid and small caps form 22.9%."
     },
     {
       "name": "Limited breadth",
       "score": 0.0,
+      "weight": 20,
+      "contribution": 0.0,
       "level": "Low",
-      "detail": "Portfolio contains 8 holdings."
+      "detail": "Portfolio contains 9 holdings."
     }
   ],
+  "risk_methodology": {
+    "name": "Structural risk score",
+    "score": 41.24,
+    "level": "Moderate",
+    "summary": "A weighted view of concentration, company-size exposure and portfolio breadth. Higher scores indicate more structural exposure.",
+    "formula": "35% single-stock concentration + 30% sector concentration + 15% mid/small-cap exposure + 20% limited breadth",
+    "performance_context": "The portfolio return is +5.66%, but return performance is not part of this structural score. A low structural score can still coexist with a large investment loss.",
+    "does_not_include": [
+      "Historical volatility or beta",
+      "Maximum drawdown or value at risk",
+      "Company fundamentals, valuation or earnings quality",
+      "Forward-looking market forecasts"
+    ],
+    "disclaimer": "Educational heuristic only; this is not a forecast or investment recommendation."
+  },
   "stress_scenarios": [
     {
       "name": "Broad market correction",
@@ -378,7 +418,7 @@
     {
       "type": "neutral",
       "title": "Return drag",
-      "message": "TATAMOTORS, KPITTECH, TCS reduce total return by approximately 2.0 percentage points."
+      "message": "KPITTECH, TMPV, TCS reduce total return by approximately 2.0 percentage points."
     },
     {
       "type": "positive",
@@ -387,17 +427,16 @@
     }
   ],
   "automated_report": {
-    "executive_summary": "Demo Indian Equity Portfolio has a health score of 66/100, a +5.66% total return, and a moderate concentration classification. The portfolio is currently driven by HDFCBANK, while KPITTECH deserves the closest performance review.",
+    "executive_summary": "Demo Indian Equity Portfolio has a health score of 67/100, a +5.66% total return, and a moderate concentration classification. The portfolio is currently driven by HDFCBANK, while KPITTECH deserves the closest performance review.",
     "strengths": [
       "The portfolio is above acquisition cost by INR 11,638, equal to +5.66%.",
-      "The diversification score is 72/100 across 6 sectors.",
-      "The calculated portfolio risk score is contained at 41.2/100.",
-      "5 of 8 holdings are currently profitable."
+      "The diversification score is 75/100 across 6 sectors.",
+      "The calculated portfolio risk score is contained at 41.2/100."
     ],
     "watch_items": [
       "Concentration is moderate: the top three holdings form 47.6%.",
       "Technology is the largest sector at 37.0%.",
-      "3 holding(s) trade below acquisition cost, led by KPITTECH.",
+      "4 holding(s) trade below acquisition cost, led by KPITTECH.",
       "The largest risk flag is sector concentration: Technology is 37.0%."
     ],
     "sections": [
@@ -407,7 +446,7 @@
       },
       {
         "heading": "Diversification and concentration",
-        "body": "The portfolio contains 8 holdings across 6 sectors, but its effective-holdings measure is 7.5. The largest position is HDFCBANK at 17.8%, and the top three positions together account for 47.6%."
+        "body": "The portfolio contains 9 holdings across 6 sectors, but its effective-holdings measure is 7.9. The largest position is HDFCBANK at 17.8%, and the top three positions together account for 47.6%."
       },
       {
         "heading": "Sector and risk profile",

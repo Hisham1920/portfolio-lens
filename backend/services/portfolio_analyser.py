@@ -205,28 +205,63 @@ def analyse_portfolio(
         {
             "name": "Single-stock concentration",
             "score": _round(stock_risk),
+            "weight": 35,
+            "contribution": _round(stock_risk * 0.35),
             "level": _risk_level(stock_risk),
             "detail": f"Largest holding is {largest_weight:.1f}%.",
         },
         {
             "name": "Sector concentration",
             "score": _round(sector_risk),
+            "weight": 30,
+            "contribution": _round(sector_risk * 0.30),
             "level": _risk_level(sector_risk),
             "detail": f"{largest_sector['name']} is {largest_sector['percentage']:.1f}%.",
         },
         {
             "name": "Mid/small-cap exposure",
             "score": _round(size_risk),
+            "weight": 15,
+            "contribution": _round(size_risk * 0.15),
             "level": _risk_level(size_risk),
             "detail": f"Mid and small caps form {mid_small_weight:.1f}%.",
         },
         {
             "name": "Limited breadth",
             "score": _round(breadth_risk),
+            "weight": 20,
+            "contribution": _round(breadth_risk * 0.20),
             "level": _risk_level(breadth_risk),
             "detail": f"Portfolio contains {len(holdings)} holdings.",
         },
     ]
+
+    risk_level = _risk_level(risk_score)
+    performance_context = (
+        f"The portfolio return is {total_return:+.2f}%, but return performance is not part of this structural score. "
+        "A low structural score can still coexist with a large investment loss."
+    )
+    risk_methodology = {
+        "name": "Structural risk score",
+        "score": risk_score,
+        "level": risk_level,
+        "summary": (
+            "A weighted view of concentration, company-size exposure and portfolio breadth. "
+            "Higher scores indicate more structural exposure."
+        ),
+        "formula": (
+            "35% single-stock concentration + 30% sector concentration + "
+            "15% mid/small-cap exposure + 20% limited breadth"
+        ),
+        "performance_context": performance_context,
+        "does_not_include": [
+            "Historical volatility or beta",
+            "Maximum drawdown or value at risk",
+            "Company fundamentals, valuation or earnings quality",
+            "Forward-looking market forecasts",
+        ],
+        "disclaimer": "Educational heuristic only; this is not a forecast or investment recommendation.",
+    }
 
     stress_scenarios = [
         _stress_scenario(
@@ -391,6 +426,7 @@ def analyse_portfolio(
         "sector_performance": sector_performance,
         "market_cap_performance": market_cap_performance,
         "risk_breakdown": risk_breakdown,
+        "risk_methodology": risk_methodology,
         "stress_scenarios": stress_scenarios,
         "insights": insights,
     }

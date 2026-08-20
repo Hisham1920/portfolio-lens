@@ -1,132 +1,141 @@
-# PortfolioLens — Milestone 6
+# PortfolioLens
 
-PortfolioLens turns Indian equity holdings into understandable performance, allocation, concentration, and risk insights.
+**AI-assisted portfolio intelligence for Indian equity investors.**
 
-Milestone 6 adds a free, cached NSE market-snapshot refresh to the AI-assisted extraction, local analytics engine, written report, and PDF export. The refresh updates supported symbols and immediately recalculates every portfolio metric. It does not consume OpenAI API credit.
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Flask](https://img.shields.io/badge/Flask-3-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-Multimodal%20Extraction-412991?logo=openai&logoColor=white)](https://platform.openai.com/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Tests](https://img.shields.io/badge/Backend%20Tests-32%20Passing-39e58c)](#testing)
 
-## Safe public showcase
+[**View the live demo**](https://portfolio-lens-delta.vercel.app/) · [**Explore the source code**](https://github.com/Hisham1920/portfolio-lens)
 
-The production frontend build runs as a demonstration-only showcase by default:
+PortfolioLens converts broker screenshots, PDFs, or manually entered holdings into an interactive portfolio dashboard. It helps users understand performance, allocation, concentration, downside exposure, and portfolio health without requiring them to interpret raw broker data.
 
-- It loads bundled demonstration portfolio data without requiring Flask.
-- Portfolio uploads and paid AI actions are disabled.
-- The automated written report and sample PDF download remain available.
-- The private local version keeps the complete upload, analysis, AI, and PDF workflow.
+> The public deployment is a safe demonstration using bundled sample data. Uploads and paid AI actions are available only when the full backend is run locally.
 
-This makes it safe to host the `frontend` folder on Vercel without publishing an OpenAI API key or allowing visitors to spend API credit. When a protected production backend is added later, set `VITE_PUBLIC_DEMO=false` and configure `VITE_API_URL` to its HTTPS address.
+## Why this project
 
-### Vercel settings
+Retail investors often receive holdings data as screenshots or broker statements, while most portfolio tools expect clean spreadsheets or manual entry. PortfolioLens closes that gap by combining multimodal extraction, mandatory human verification, deterministic financial analytics, market-price refresh, and readable reporting in one workflow.
 
-1. Import the GitHub repository into Vercel.
-2. Set **Root Directory** to `frontend`.
-3. Vercel detects Vite and uses `npm run build`.
-4. The output directory is `dist`.
-5. Do not add `OPENAI_API_KEY` to the frontend project.
+## Core capabilities
 
-## What works
+### Portfolio ingestion
 
-- Upload JPG, JPEG, PNG, or PDF portfolio files
-- Upload up to 6 screenshots, including overlapping screenshots
-- Detect Zerodha, Upstox, or another broker layout
-- Extract only visibly shown holdings and remove duplicate symbols
-- Prefill symbol, company, quantity, average price, LTP/current price, sector, and market cap
-- Highlight lower-confidence readings and missing fields
-- Require the user to verify every holding before analysis
-- Keep manual holding entry as an alternative
-- Recalculate the complete dashboard through the Flask API
-- Portfolio health score and effective-holdings measure
-- Gross gains, gross losses, profit factor, winners, and losers
-- Best and weakest holding identification
-- Single-stock, top-three, and sector concentration analysis
-- Return contribution in portfolio percentage points
-- Sector-level invested value, current value, P&L, and return
-- Four preset stress scenarios
-- Interactive market and sector stress-test sliders
-- Risk decomposition for stock, sector, size, and portfolio breadth
-- Break-even movement and equal-weight comparison for each holding
-- Free written report generated from calculated portfolio metrics
-- Optional AI-written interpretation with a separate consent step
-- Clear source label: `Automated analysis` or `AI-generated interpretation`
-- Browser caching for each AI report based on its holdings and prices
-- Download either report as a polished PDF
-- Refresh supported NSE holdings with the latest available Yahoo Finance market snapshot
-- Preserve the previous manual price when an individual symbol cannot be refreshed
-- Cache market prices for five minutes to reduce provider traffic and rate-limit risk
-- Name failed symbols and show corporate-action suggestions instead of silently substituting an unsafe ticker
-- Normalise common broker formats such as `NSE:RELIANCE`, `NSE_EQ|RELIANCE`, and `RELIANCE-EQ`
+- Upload JPG, JPEG, PNG, or PDF portfolio files.
+- Read Zerodha, Upstox, and generic broker layouts.
+- Process up to six overlapping screenshots and remove duplicate holdings.
+- Extract only visible rows instead of inventing holdings from totals such as `Holdings (9)`.
+- Prefill symbol, company, quantity, average price, current price, sector, and market cap.
+- Highlight low-confidence values and require user verification before analysis.
+- Keep manual portfolio entry as a complete alternative.
 
-The Upstox reference screenshot is intentionally treated as two visible holdings: CDSL and IRCON. A heading such as `Holdings (9)` never causes hidden rows to be invented.
+### Analytics and risk
 
-## API cost behavior
+- Current value, invested value, total P&L, and portfolio return.
+- Winners, losers, gross gains, gross losses, and profit factor.
+- Sector and market-cap allocation and performance.
+- Single-stock, top-three, and sector concentration analysis.
+- Effective holdings, diversification score, health score, and risk decomposition.
+- Return contribution, break-even movement, and equal-weight comparison by holding.
+- Four preset downside scenarios plus interactive market and sector stress tests.
 
-| Action | OpenAI API usage |
+### Market data and reports
+
+- Refresh supported NSE holdings with the latest available Yahoo Finance snapshot.
+- Cache quotes for five minutes to reduce provider traffic and rate-limit risk.
+- Preserve the previous price when an individual symbol cannot be refreshed.
+- Normalize broker formats such as `NSE:RELIANCE`, `NSE_EQ|RELIANCE`, and `RELIANCE-EQ`.
+- Detect legacy `TATAMOTORS` positions and require record-date confirmation before resolving the demerger.
+- Split eligible Tata Motors positions 1:1 into `TMPV` and `TMCV`, preserving total cost with the official 68.85% / 31.15% allocation.
+- Generate a free deterministic written report from verified calculations.
+- Optionally request a clearly labelled AI interpretation with separate consent.
+- Export either report as a formatted PDF.
+
+## Product workflow
+
+```mermaid
+flowchart TD
+    A["Upload broker file or enter holdings"] --> B["AI extraction and deduplication"]
+    B --> C["Mandatory user verification"]
+    C --> D["Deterministic portfolio analytics"]
+    D --> E["Dashboard, stress tests and report"]
+    D --> F["Optional market-price refresh"]
+    F --> D
+```
+
+The AI is used to read unstructured documents and optionally explain results. Portfolio calculations themselves are deterministic and are recomputed from the verified holdings.
+
+## Engineering decisions
+
+| Decision | Reason |
 | --- | --- |
-| Uploading a screenshot or PDF and pressing **Extract holdings** | Yes — one extraction request |
-| Reviewing or manually correcting holdings | No |
-| Running the portfolio analysis | No |
-| Using stress-test sliders | No |
-| Viewing charts, scores, risks, or smart insights | No |
-| Reading the default written report | No |
-| Downloading the default report as PDF | No |
-| Pressing **Generate AI report** after consent | Yes — one report request |
-| Reopening an unchanged cached AI report in the same browser | No |
-| Downloading an already-generated AI report as PDF | No |
-| Searching or filtering holdings | No |
-| Refreshing the latest available market snapshot | No |
+| Mandatory review after extraction | Financial screenshots can be ambiguous; users must verify every value before analysis. |
+| Deterministic analytics engine | Metrics should be reproducible and should not depend on generative model output. |
+| Explicit consent for AI calls | Uploads and optional AI reports should never be sent without a deliberate user action. |
+| In-memory file processing | Original uploaded documents are not saved by the Flask application. |
+| Five-minute quote cache | Reduces unnecessary provider calls without using OpenAI API credit. |
+| Partial refresh protection | A failed symbol retains its existing price instead of breaking or corrupting the portfolio. |
+| Confirmed corporate-action resolver | Legacy Tata Motors positions are changed only after record-date confirmation; the official entitlement and cost-basis allocation are applied transparently. |
+| Safe public-demo mode | Recruiters can explore the product without exposing private uploads, backend secrets, or API credit. |
 
-You can therefore extract once, verify the holdings, and use the full analytics dashboard, free written report, stress tests, and PDF export without spending more API credit. The AI report is always optional.
+The Tata Motors resolver follows the [company's NSE-filed shareholder entitlement and cost-allocation notice](https://nsearchives.nseindia.com/corporate/TATAMOTORSSJS_12112025224654_NSEBSECOAFINAL.pdf): one commercial-vehicle share per legacy share, with 68.85% of original cost assigned to TMPV and 31.15% to TMCV.
 
-## Important privacy and accuracy notes
+## Tech stack
 
-- Uploaded files are sent to the OpenAI API only after the user checks the consent box.
-- Files are processed in backend memory and PortfolioLens does not save the original uploads.
-- AI responses are requested with API storage disabled; OpenAI still processes data under your API account's data controls.
-- Remove account numbers and unnecessary personal information before uploading.
-- AI extraction can make mistakes. The review screen is mandatory.
-- AI-written reports interpret calculated figures but may still contain mistakes. They are clearly labelled and should be verified.
-- The cached AI report is stored only in that browser's local storage and is replaced when the portfolio inputs change.
-- Yahoo Finance snapshots may be delayed and are not exchange-certified real-time quotes.
-- The free Yahoo endpoint is appropriate for this local MVP, not a licensed commercial market-data feed.
-- A production trading product should switch the provider layer to an authorised broker or exchange-data service.
-- PortfolioLens provides educational analytics, not investment advice.
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, Vite, Recharts, Lucide React, CSS |
+| Backend | Python, Flask, Pydantic |
+| AI extraction and interpretation | OpenAI API with structured responses |
+| Market snapshot prototype | Yahoo Finance chart endpoint with an in-memory TTL cache |
+| PDF generation | ReportLab |
+| Testing | Python `unittest`, mocked external AI and market-data calls |
+| Deployment | Vercel for the public demonstration frontend |
 
-## Market-price refresh
+## Architecture
 
-Run the complete local app, analyse a portfolio, and press **Refresh market prices** above the dashboard metrics. PortfolioLens converts supported symbols such as `RELIANCE` to their NSE ticker (`RELIANCE.NS`), retrieves the latest available snapshot, and recalculates the portfolio.
-
-No market-data API key is required for this MVP. The backend caches each quote for five minutes. You can change the cache duration in `backend/.env`:
-
-```env
-MARKET_PRICE_CACHE_SECONDS=300
+```mermaid
+flowchart LR
+    UI["React dashboard"] --> API["Flask API"]
+    API --> Extract["Document extractor"]
+    API --> Analyse["Portfolio analyser"]
+    API --> Market["Market-data service"]
+    API --> Report["Report generator"]
 ```
 
-The public Vercel showcase remains demonstration-only, so visitors cannot call the private local backend or create API costs. For a future production release, replace the Yahoo provider with a licensed feed such as Upstox Market Data, DhanHQ, or Zerodha Kite Connect and host the protected backend separately.
+The public Vercel build loads bundled demonstration analytics and disables uploads and paid AI actions. The local full-stack version connects the React frontend to Flask at `http://127.0.0.1:5000`.
 
-Local Vite addresses such as `http://localhost:5173` and `http://localhost:5174` are accepted automatically. If you later host a protected backend, add the exact production frontend origin to `FRONTEND_ORIGINS` in `backend/.env`.
+## Cost-conscious API design
 
-The legacy `TATAMOTORS` symbol is intentionally not replaced automatically. Following the Tata Motors demerger, a user may need `TMPV`, `TMCV`, or both, with separately verified acquisition costs. PortfolioLens names this issue and keeps the existing price until the user reviews it.
+| User action | OpenAI API usage |
+| --- | --- |
+| Upload and extract a screenshot or PDF | One extraction request |
+| Review or manually edit holdings | None |
+| Run analytics, charts, risk analysis, or stress tests | None |
+| Refresh supported market prices | None |
+| Read or download the automated report | None |
+| Generate the optional AI interpretation | One report request |
+| Reopen an unchanged cached AI report | None |
 
-## Easiest Windows start
+The default analytical experience therefore remains available after extraction without consuming additional OpenAI credit.
 
-1. Extract the ZIP first. Do not run it from inside the compressed folder.
+## Run locally on Windows
+
+### Quick start
+
+1. Clone or download the repository.
 2. Double-click `start-backend.bat`.
-3. On the first run, Notepad opens `backend\.env`. Replace `replace_with_your_secret_key` with your OpenAI API key, save, and close Notepad.
-4. Leave the backend window open.
+3. On the first run, add your OpenAI API key to the generated `backend\.env` file, save it, and close Notepad.
+4. Keep the backend terminal open.
 5. Double-click `start-frontend.bat`.
-6. Leave that window open and visit `http://localhost:5173`.
+6. Open `http://localhost:5173`.
 
-Never paste the API key into frontend code, GitHub, screenshots, or chat. The real `.env` file is excluded from the project ZIP and Git.
+If port `5173` is already occupied, Vite may use `5174`; both local addresses are accepted by the backend.
 
-If you already configured an earlier milestone, you can copy its private `backend\.env` file into the new Milestone 5 `backend` folder instead of entering the key again. The report model settings are optional because safe defaults are built in:
+### Manual setup
 
-```env
-OPENAI_REPORT_MODEL=gpt-5.6-luna
-OPENAI_REPORT_REASONING_EFFORT=low
-```
-
-## Manual Windows setup
-
-Backend, in Command Prompt:
+Backend:
 
 ```bat
 cd backend
@@ -138,8 +147,6 @@ notepad .env
 python app.py
 ```
 
-Keep that terminal open. The API runs at `http://127.0.0.1:5000`.
-
 Frontend, in a second Command Prompt:
 
 ```bat
@@ -148,48 +155,94 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+## Environment variables
 
-If the folders are inside a path containing spaces, first navigate to the extracted `portfolio-lens` folder in File Explorer, click the address bar, type `cmd`, and press Enter. Then use `cd backend` or `cd frontend`.
+Create `backend/.env` from `backend/.env.example`:
 
-## macOS/Linux setup
+```env
+OPENAI_API_KEY=your_private_key
+OPENAI_MODEL=gpt-5.6
+OPENAI_REASONING_EFFORT=high
+OPENAI_REPORT_MODEL=gpt-5.6-luna
+OPENAI_REPORT_REASONING_EFFORT=low
+MARKET_PRICE_CACHE_SECONDS=300
+FRONTEND_ORIGINS=
+```
+
+Never commit `backend/.env`. The file is excluded through `.gitignore`.
+
+## Testing
 
 ```bash
 cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env and add OPENAI_API_KEY
-python app.py
-```
-
-In a second terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## Tests
-
-```bash
-cd backend
-python -m unittest discover -s tests
+python -m unittest discover -s tests -v
 
 cd ../frontend
 npm run lint
 npm run build
 ```
 
-The extraction and AI-report route tests mock external AI requests, so the test suite does not spend API credit. A real upload or AI-report test uses your own API key and API billing. Local analytics, the automated report, and PDF creation do not need an API key.
+- 26 backend tests cover analytics consistency, extraction validation, deduplication, reports, PDF generation, market-symbol handling, caching, partial failures, and API routes.
+- External OpenAI and market-data requests are mocked, so the automated test suite does not spend API credit.
+- The Vite production build is verified before release.
 
-## API routes
+## API endpoints
 
-- `GET /api/health`
-- `GET /api/portfolio/demo`
-- `POST /api/portfolio/extract` — multipart files plus explicit consent
-- `POST /api/portfolio/analyse` — verified holding data
-- `POST /api/portfolio/report/ai` — optional AI interpretation plus explicit consent
-- `POST /api/portfolio/report/pdf` — render a selected written report as PDF
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Backend health check |
+| `GET` | `/api/portfolio/demo` | Generate the demonstration analysis |
+| `POST` | `/api/portfolio/extract` | Extract holdings from consented uploads |
+| `POST` | `/api/portfolio/analyse` | Analyse verified holdings |
+| `POST` | `/api/portfolio/refresh-prices` | Refresh supported NSE market snapshots |
+| `POST` | `/api/portfolio/report/ai` | Generate an optional AI interpretation |
+| `POST` | `/api/portfolio/report/pdf` | Export a selected report as PDF |
+
+## Privacy, accuracy, and financial-data notes
+
+- Remove account numbers and unnecessary personal information before uploading.
+- Uploaded files are processed in memory and sent to the OpenAI API only after explicit consent.
+- AI extraction and interpretation can make mistakes; extracted numbers must be verified.
+- Yahoo Finance snapshots may be delayed and are not exchange-certified real-time quotes.
+- The free market-data integration is an MVP prototype, not a licensed commercial feed.
+- A production financial product should use an authorized broker or exchange-data provider and a protected hosted backend.
+- PortfolioLens provides educational analytics, not personalized investment advice.
+
+## Project structure
+
+```text
+portfolio-lens/
+├── backend/
+│   ├── services/
+│   │   ├── document_extractor.py
+│   │   ├── market_data.py
+│   │   ├── portfolio_analyser.py
+│   │   └── report_generator.py
+│   ├── tests/
+│   ├── app.py
+│   └── sample_data.py
+├── frontend/
+│   ├── public/
+│   └── src/
+│       ├── App.jsx
+│       └── styles.css
+├── start-backend.bat
+└── start-frontend.bat
+```
+
+## Roadmap
+
+- Replace the free snapshot prototype with a licensed production market-data provider.
+- Add authentication and encrypted, user-controlled portfolio persistence.
+- Support CSV/XLSX broker exports and additional Indian broker layouts.
+- Add benchmark comparison against NIFTY indices.
+- Add historical portfolio performance, volatility, beta, and risk-adjusted-return metrics.
+- Deploy the protected backend with rate limiting, monitoring, and usage controls.
+
+## Resume summary
+
+> Built PortfolioLens, a React and Flask portfolio-intelligence platform that extracts Indian equity holdings from broker screenshots/PDFs using multimodal AI, validates them through a human-in-the-loop workflow, refreshes supported NSE price snapshots, and computes deterministic performance, allocation, concentration, risk, stress-test, and written-report insights.
+
+---
+
+Built by [Hisham Siddiqui](https://github.com/Hisham1920).
