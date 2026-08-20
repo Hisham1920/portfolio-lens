@@ -114,6 +114,54 @@ class PortfolioExtractionRouteTest(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("non-empty", response.get_json()["error"])
 
+    @patch("app.refresh_holdings_prices")
+    def test_resolves_tata_motors_demerger_and_recalculates(self, refresh_mock):
+        legacy = {
+            "symbol": "TATAMOTORS",
+            "company": "Tata Motors",
+            "quantity": 30,
+            "average_price": 868,
+            "current_price": 812.35,
+            "sector": "Automobile",
+            "market_cap": "Large Cap",
+        }
+
+        def refreshed(holdings):
+            prices = {"TMPV": 350, "TMCV": 450}
+            updated = [{**item, "current_price": prices[item["symbol"]]} for item in holdings]
+            return updated, {
+                "provider": "Yahoo Finance",
+                "fetched_at": "2026-08-20T08:30:00+00:00",
+                "refreshed_count": 2,
+                "failed_count": 0,
+                "failed_symbols": [],
+                "cache_hits": 0,
+            }
+
+        refresh_mock.side_effect = refreshed
+        response = self.client.post(
+            "/api/portfolio/resolve-corporate-action",
+            json={
+                "portfolio_name": "Test Portfolio",
+                "holdings": [legacy],
+                "held_on_record_date": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.get_json()
+        self.assertEqual({item["symbol"] for item in payload["holdings"]}, {"TMPV", "TMCV"})
+        self.assertTrue(payload["meta"]["corporate_action_resolution"]["market_prices_refreshed"])
+
+    def test_resolver_requires_record_date_confirmation(self):
+        response = self.client.post(
+            "/api/portfolio/resolve-corporate-action",
+            json={"holdings": [{"symbol": "TATAMOTORS"}]},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("record date", response.get_json()["error"])
+
     def test_accepts_alternate_local_vite_port(self):
         response = self.client.get(
             "/api/health",

@@ -735,6 +735,54 @@ function ManualPortfolioModal({ onClose, onAnalyse, onExtract, analysing, extrac
   )
 }
 
+function CorporateActionModal({ onClose, onResolve, resolving, error }) {
+  const [confirmed, setConfirmed] = useState(false)
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="corporate-action-modal" role="dialog" aria-modal="true" aria-label="Resolve Tata Motors demerger">
+        <div className="modal-header">
+          <div>
+            <span className="modal-kicker">Corporate action review</span>
+            <h2>Resolve the Tata Motors demerger</h2>
+            <p>The legacy TATAMOTORS position cannot safely use a single replacement ticker.</p>
+          </div>
+          <button className="modal-close" onClick={onClose} aria-label="Close"><X size={19} /></button>
+        </div>
+        <div className="corporate-action-body">
+          <div className="corporate-action-explainer">
+            <TriangleAlert size={20} />
+            <div>
+              <strong>Why confirmation is required</strong>
+              <span>Investors who held the shares on 14 October 2025 retained one TMPV share and received one TMCV share for every legacy TATAMOTORS share.</span>
+            </div>
+          </div>
+          <div className="demerger-grid">
+            <article><span>TMPV</span><strong>Passenger vehicles</strong><small>68.85% of original acquisition cost</small></article>
+            <article><span>TMCV</span><strong>Commercial vehicles</strong><small>31.15% of original acquisition cost</small></article>
+          </div>
+          <div className="resolution-result">
+            <CheckCircle2 size={18} />
+            <div><strong>What PortfolioLens will do</strong><span>Split the quantity 1:1, preserve the total original cost, then refresh both NSE market prices independently.</span></div>
+          </div>
+          <label className="record-date-check">
+            <input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
+            <span>I confirm that this TATAMOTORS position was held on the 14 October 2025 record date.</span>
+          </label>
+          <p className="corporate-action-caution">If the shares were bought later or your broker already converted them, close this window and enter the actual TMPV/TMCV holdings shown by your broker.</p>
+          {error && <div className="form-error corporate-action-error">{error}</div>}
+        </div>
+        <div className="modal-actions">
+          <button className="secondary-action" onClick={onClose}>Not now</button>
+          <button className="primary-action" onClick={onResolve} disabled={!confirmed || resolving}>
+            {resolving ? <><LoaderCircle className="spin-icon" size={17} />Resolving…</> : 'Resolve and refresh'}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function App() {
   const [portfolio, setPortfolio] = useState(null)
   const [error, setError] = useState('')
@@ -744,6 +792,10 @@ function App() {
   const [priceRefreshing, setPriceRefreshing] = useState(false)
   const [priceError, setPriceError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [corporateActionOpen, setCorporateActionOpen] = useState(false)
+  const [corporateActionResolving, setCorporateActionResolving] = useState(false)
+  const [corporateActionError, setCorporateActionError] = useState('')
+  const [resolutionNotice, setResolutionNotice] = useState('')
 
   useEffect(() => {
     const source = PUBLIC_DEMO_MODE ? '/demo-portfolio.json' : apiUrl('/api/portfolio/demo')
@@ -859,6 +911,38 @@ function App() {
     }
   }
 
+  const resolveTataMotorsDemerger = async () => {
+    if (PUBLIC_DEMO_MODE || !portfolio) return
+    setCorporateActionResolving(true)
+    setCorporateActionError('')
+    try {
+      const response = await fetch(apiUrl('/api/portfolio/resolve-corporate-action'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          portfolio_name: portfolio.meta.portfolio_name,
+          holdings: reportHoldings(portfolio),
+          held_on_record_date: true,
+        }),
+      })
+      const result = await responseJson(
+        response,
+        'The resolver returned an unexpected response. Confirm the latest backend is running.',
+      )
+      if (!response.ok) throw new Error(result.error || 'Corporate-action resolution failed.')
+      setPortfolio(result)
+      setCorporateActionOpen(false)
+      const priceText = result.meta.corporate_action_resolution?.market_prices_refreshed
+        ? 'Both market prices were refreshed.'
+        : 'Use Refresh market prices when the provider is available.'
+      setResolutionNotice(`TATAMOTORS was split into TMPV and TMCV. ${priceText}`)
+    } catch (requestError) {
+      setCorporateActionError(requestError.message)
+    } finally {
+      setCorporateActionResolving(false)
+    }
+  }
+
   if (error) {
     return (
       <main className="state-screen">
@@ -881,11 +965,14 @@ function App() {
     market_cap_allocation,
     sector_performance,
     risk_breakdown,
+    risk_methodology,
     stress_scenarios,
     insights,
     meta,
   } = portfolio
   const positiveReturn = summary.total_pnl >= 0
+  const structuralRiskLevel = risk_methodology?.level
+    || (summary.risk_score < 35 ? 'Low' : summary.risk_score < 65 ? 'Moderate' : 'High')
   const marketData = meta.market_data
   const marketUpdateTime = marketData?.fetched_at
     ? new Date(marketData.fetched_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -900,6 +987,14 @@ function App() {
           onExtract={extractPortfolioFiles}
           analysing={analysing}
           extracting={extracting}
+        />
+      )}
+      {corporateActionOpen && (
+        <CorporateActionModal
+          onClose={() => { setCorporateActionOpen(false); setCorporateActionError('') }}
+          onResolve={resolveTataMotorsDemerger}
+          resolving={corporateActionResolving}
+          error={corporateActionError}
         />
       )}
       <aside className="sidebar">
@@ -981,9 +1076,21 @@ function App() {
                 {failure.suggested_symbols?.length > 0 && (
                   <small>Suggested symbols to review: {failure.suggested_symbols.join(' and ')}.</small>
                 )}
+                {failure.type === 'corporate_action_review' && !PUBLIC_DEMO_MODE && (
+                  <button className="resolve-corporate-action" onClick={() => setCorporateActionOpen(true)}>
+                    Resolve Tata Motors demerger
+                  </button>
+                )}
               </div>
             </div>
           ))}
+          {resolutionNotice && (
+            <div className="corporate-action-success">
+              <CheckCircle2 size={15} />
+              <span>{resolutionNotice}</span>
+              <button onClick={() => setResolutionNotice('')} aria-label="Dismiss"><X size={14} /></button>
+            </div>
+          )}
           {priceError && (
             <div className="price-refresh-error"><TriangleAlert size={15} /><span>{priceError}</span></div>
           )}
@@ -992,7 +1099,7 @@ function App() {
             <MetricCard label="Current value" value={money.format(summary.current_value)} note={`${summary.holdings_count} holdings across ${summary.sectors_count} sectors`} icon={WalletCards} />
             <MetricCard label="Total invested" value={money.format(summary.invested_value)} note="Your total acquisition cost" icon={CircleDollarSign} accent="blue" />
             <MetricCard label="Total returns" value={`${positiveReturn ? '+' : ''}${money.format(summary.total_pnl)}`} note={`${positiveReturn ? '▲' : '▼'} ${Math.abs(summary.total_return).toFixed(2)}% overall return`} icon={positiveReturn ? ArrowUpRight : ArrowDownRight} accent={positiveReturn ? 'green' : 'red'} />
-            <MetricCard label="Portfolio risk" value={`${summary.risk_score}/100`} note={`${summary.risk_score < 35 ? 'Low' : summary.risk_score < 65 ? 'Moderate' : 'High'} risk profile`} icon={Gauge} accent="orange" />
+            <MetricCard label="Structural risk" value={`${summary.risk_score}/100`} note={`${structuralRiskLevel} exposure score · excludes volatility`} icon={Gauge} accent="orange" />
           </section>
 
           <section className="insight-stats">
@@ -1061,16 +1168,36 @@ function App() {
             </article>
 
             <article className="panel deep-panel" id="risk">
-              <div className="panel-heading"><div><h3><ShieldCheck size={18} />Risk decomposition</h3><p>Heuristic exposure indicators from 0 to 100</p></div></div>
+              <div className="panel-heading">
+                <div><h3><ShieldCheck size={18} />Structural risk breakdown</h3><p>Weighted exposure heuristic · not a return or volatility forecast</p></div>
+                <span className={`status-badge status-${structuralRiskLevel.toLowerCase()}`}>{structuralRiskLevel} · {summary.risk_score}/100</span>
+              </div>
+              {risk_methodology && (
+                <div className="risk-methodology-note">
+                  <Gauge size={17} />
+                  <div>
+                    <strong>What this score means</strong>
+                    <span>{risk_methodology.summary}</span>
+                    <small>{risk_methodology.performance_context}</small>
+                  </div>
+                </div>
+              )}
               <div className="risk-factor-list">
                 {risk_breakdown.map((factor) => (
                   <div className="risk-factor" key={factor.name}>
-                    <div><span>{factor.name}</span><strong className={`level-${factor.level.toLowerCase()}`}>{factor.level}</strong></div>
+                    <div>
+                      <span>{factor.name}{factor.weight != null && <em>{factor.weight}% weight</em>}</span>
+                      <strong className={`level-${factor.level.toLowerCase()}`}>{factor.level}</strong>
+                    </div>
                     <i><b style={{ width: `${factor.score}%` }} /></i>
-                    <small>{factor.detail}</small>
+                    <div className="risk-factor-detail">
+                      <small>{factor.detail}</small>
+                      {factor.contribution != null && <small>{factor.score.toFixed(1)} × {factor.weight}% = <b>{factor.contribution.toFixed(1)} points</b></small>}
+                    </div>
                   </div>
                 ))}
               </div>
+              {risk_methodology && <p className="risk-formula"><strong>Formula:</strong> {risk_methodology.formula}. {risk_methodology.disclaimer}</p>}
             </article>
           </section>
 
